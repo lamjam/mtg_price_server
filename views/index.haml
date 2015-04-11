@@ -1,0 +1,24 @@
+%h2 Magic Card Price Engine
+%form{:action => "/search", :method => "get"}
+  %fieldset    
+    %label{:for => "q"} Query:
+    %input{:type => "text", :name => "q", :class => "text", :value => params[:q]}
+- if locals[:card_data]
+  - if locals[:card_data].length == 0
+    %h2= "No cards found for '#{params[:q]}'"
+  - else
+    %h2= "#{locals[:card_data].length} cards found"
+    %table
+      %tbody
+        %tr
+          %td Set
+          %td Name
+          %td Price
+      - locals[:card_data].each do |card|
+        %tr
+          %td= card[:set]
+          %td= card[:name]
+          %td= card[:sell_price]
+
+
+

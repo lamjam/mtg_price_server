@@ -1,0 +1,68 @@
+:css
+  .main-page {
+    background-color: #e1e8f2;
+    font-family: Garamond;
+  }
+
+%link{type: 'text/css', rel: 'stylesheet', href:'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css'}
+%script{src: 'https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'}
+%script{src: 'http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js' }
+%head
+  %title= 'lamjam mtgo search'
+
+%body{class: 'main-page'}
+  %br      
+  %div{class: 'container-fluid'}
+    %div{class: 'row'}
+      %div{class: 'col-sm-1'}
+      %div{class: 'col-sm-6'}
+        %h2 MTGO Card Price Engine
+        %form{:action => "/search", :method => "get"}
+          %input{type: "text", name: "q", value: params[:q], placeholder: "Enter Search Term here...", style: "width:70%; font-family:Verdana"}
+          %br
+          Standard Only
+          %input{:type => "checkbox", name: "format", value: "standard", checked: params[:format] == 'standard'}
+          - if locals[:card_data]
+            - if locals[:card_data].length == 0
+              %h3= "No cards found for '#{params[:q]}'"
+            - else
+              - num_cards = locals[:card_data].length
+              %h3= "#{num_cards} #{num_cards > 1 ? 'cards' : 'card'} found"      
+      %div{class: 'col-sm-5'}
+    %div{class: 'row'}  
+      %div{class: 'col-sm-1'}  
+      %div{class: 'col-sm-6'}
+        - if locals[:card_data]        
+          %table{:style => "width:100%;", :align => 'center'}
+            %tbody
+              %tr
+                %td{:style => "text-align:center"} Set
+                %td{:style => "text-align:center"} Name
+                %td{:style => "text-align:center"} Rarity
+                %td{:style => "text-align:center"} Buy Price
+                %td{:style => "text-align:center"} Sell Price
+                %td{:style => 'text-align:center'} Image
+            - locals[:card_data].each_with_index do |card, index|
+              %tr{style: index % 2 == 0 ? 'background-color:#BCF' : 'background-color:CDF'}
+                %td{:style => "text-align:center"}= card[:set]
+                %td{:style => "text-align:center"}= card[:name]
+                %td{:style => "text-align:center"}= card[:rarity_short]
+                %td{:style => "text-align:center"}= card[:buy_price]
+                %td{:style => "text-align:center"}= card[:sell_price]
+                %td{:style => 'text-align:center'}
+                  - if card[:link_to_card_image]
+                    %a{:href => card[:link_to_card_image], :target => '_mtgcardinfo'} image
+                  - else
+                    no-image
+      %div{class: 'col-sm-5'}
+        %table
+          %tbody
+            %tr
+              - if locals[:card_data]
+                %td Card
+        - if locals[:card_data]
+          %iframe{:name => '_mtgcardinfo', width: '332px', height: '465px' }
+
+
+
+
