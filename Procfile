@@ -1,0 +1,1 @@
+web: bundle exec ruby mtg_price_server.rb -p $PORT

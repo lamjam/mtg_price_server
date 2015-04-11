@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+ruby '2.1.5'
+gem 'haml'
+gem 'htmlentities'
+gem 'json'
+gem 'net'
+gem 'sinatra'
