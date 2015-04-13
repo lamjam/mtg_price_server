@@ -49,12 +49,12 @@ class CardDataFetcher
 
   def parse_query(query)
     query_params = {}
-    advanced_params_regex = /([\w]+)=([\d\w]+|"[\d\w\s]+")/
+    advanced_params_regex = /([\w]+)=([\d\w]+|"([\d\w\s]+)")/
     advanced_params = query.scan(advanced_params_regex)
     if advanced_params.length > 0
       advanced_params.each do |keyval|
         if advanced_param_keys.include?(keyval[0])
-          query_params[keyval[0]] = keyval[1]
+          query_params[keyval[0]] = keyval[2] ? keyval[2] : keyval[1]
         end
       end
     else
