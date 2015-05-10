@@ -98,6 +98,7 @@ class CardDataFetcher
     html_coder = HTMLEntities.new
     json_data["aaData"].each do |item|
       mtg_card_data = @mtg_data.get_card_info(item[0], item[1]) || {}
+      card_image_link = link_to_card_image(mtg_card_data['set_code'], mtg_card_data['number'])
       formatted_data << {
         :set => item[0],
         :name => item[1],
@@ -109,7 +110,7 @@ class CardDataFetcher
         :type => html_coder.encode(mtg_card_data['type']),
         :text => html_coder.encode(mtg_card_data['text']),
         :mana_cost => html_coder.encode(mtg_card_data['manaCost']),
-        :link_to_card_image => link_to_card_image(item[0], mtg_card_data['number'])
+        :link_to_card_image => card_image_link
       }
     end
     puts formatted_data[0][:type], html_coder.decode(formatted_data[0][:type])
@@ -122,7 +123,9 @@ class CardDataFetcher
   end
 
   def link_to_card_image(set, set_number)
-    "http://magiccards.info/scans/en/#{set.downcase}/#{set_number}.jpg"
+    if set && set_number
+      "http://magiccards.info/scans/en/#{set.downcase}/#{set_number}.jpg"
+    end
   end
 
   def sets_in_format(format)
@@ -139,16 +142,25 @@ class MtgData
   def initialize
     card_info_json = JSON.parse(File.read('AllSets.json'))
     @card_info_hash = {}
+    @card_info_hash_by_card = {}
     card_info_json.each do |set_code, set_data|
       @card_info_hash[set_code] = {}
       card_info_json[set_code]['cards'].each do |card|
         card_name = card['names'] ? card['names'].join(' // ') : card['name']
+        card['set_code'] = set_code
         @card_info_hash[set_code][card_name.downcase] = card
+        unless @card_info_hash_by_card[card_name.downcase]
+          @card_info_hash_by_card[card_name.downcase] = card
+        end
       end
     end
   end
 
-  def get_card_info(set, card_name)    
-    @card_info_hash[set.upcase][card_name.downcase]
+  def get_card_info(set, card_name)
+    if @card_info_hash[set.upcase]
+      @card_info_hash[set.upcase][card_name.downcase]
+    else
+      @card_info_hash_by_card[card_name.downcase]
+    end
   end
 end
