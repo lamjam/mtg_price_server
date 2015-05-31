@@ -87,13 +87,8 @@ class CardDataFetcher
     true
   end
 
-  def parsed_body(body)    
-    start_php = '{ "aaData"'
-    end_php = '<?php endif'
-    start_json = body.index(start_php)
-    end_json = body.index(end_php) - 1    
-    json_string = body[start_json..end_json]
-    json_data = JSON.parse(json_string)
+  def parsed_body(body)
+    json_data = JSON.parse(body)
     formatted_data = []
     html_coder = HTMLEntities.new
     json_data["aaData"].each do |item|
