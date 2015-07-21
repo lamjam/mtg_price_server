@@ -4,11 +4,11 @@ require 'haml'
 require 'cgi'
 load 'mtg_price_backend.rb'
 
-card_fetcher = CardDataFetcher.new
+$card_fetcher = CardDataFetcher.new
 
 def render_search_page(params = {})
   if params[:q]
-    results = card_fetcher.run_query(params)
+    results = $card_fetcher.run_query(params)
   end
   haml :search, locals: { card_data: results }
 end
@@ -18,7 +18,7 @@ get '/' do
 end
 
 get '/refresh' do
-  card_fetcher.fetch_cards(true)
+  $card_fetcher.fetch_cards(true)
   render_search_page
 end
 
@@ -28,7 +28,7 @@ end
 
 get '/search.json' do
   if params[:q]
-    results = card_fetcher.run_query(params)
+    results = $card_fetcher.run_query(params)
   end
   content_type 'json'
   response = {
