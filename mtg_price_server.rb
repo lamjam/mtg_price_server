@@ -6,18 +6,24 @@ load 'mtg_price_backend.rb'
 
 card_fetcher = CardDataFetcher.new
 
-get '/' do
+def render_search_page(params = {})
   if params[:q]
     results = card_fetcher.run_query(params)
   end
   haml :search, locals: { card_data: results }
 end
 
+get '/' do
+  render_search_page(params)
+end
+
+get '/refresh' do
+  card_fetcher.fetch_cards(true)
+  render_search_page
+end
+
 get '/search'  do
-  if params[:q]
-    results = card_fetcher.run_query(params)
-  end
-  haml :search, locals: { card_data: results }
+  render_search_page(params)
 end
 
 get '/search.json' do
